@@ -21,7 +21,6 @@ export default function DashboardPage() {
         return
       }
 
-      // Učitavanje kredita i poslova
       const { data: profile } = await supabase
         .from('profiles')
         .select('credits')
@@ -37,7 +36,6 @@ export default function DashboardPage() {
       setCredits(profile?.credits || 0)
       setJobs(userJobs || [])
 
-      // Kreiranje Signed URL-ova za ilustracije
       if (userJobs) {
         const urls: Record<string, string> = {}
         for (const job of userJobs) {
@@ -66,7 +64,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {/* Navigacija */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="font-heading text-2xl font-extrabold text-slate-900">
@@ -108,7 +105,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        /* Desni deo - Istorija kreiranja */
+        {/* Desni deo - Istorija kreiranja */}
         <div className="lg:col-span-2">
           <h2 className="font-heading text-2xl font-extrabold text-slate-900 mb-6">Your Creations</h2>
           
@@ -131,7 +128,7 @@ export default function DashboardPage() {
                   </div>
                   <div className="p-4 flex justify-between items-center">
                     <span className="text-xs text-slate-500">{new Date(job.created_at).toLocaleDateString()}</span>
-                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full capitalize ${
                       job.status === 'completed' ? 'bg-green-100 text-green-700' :
                       job.status === 'failed' ? 'bg-red-100 text-red-700' :
                       'bg-amber-100 text-amber-700'

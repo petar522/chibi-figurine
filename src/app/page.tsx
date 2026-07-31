@@ -17,7 +17,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Sekcija */}
+            {/* Hero Sekcija */}
       <section className="relative pt-40 pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           {/* Levi deo - Tekst */}
@@ -41,29 +41,34 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Desni deo - Slika osobe + 3D Model zajedno */}
-          <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center p-4 gap-4">
-            {/* Slika osobe - object-contain sprečava sečenje! */}
-            <div className="h-full w-1/2 flex items-center justify-center bg-white/30 rounded-2xl overflow-hidden">
+          {/* Desni deo - 3D Model sa nakrivljenom slikom i strelicom */}
+          <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
+            <ModelViewer 
+              src="/hero-figurine.glb" 
+              alt="3D Chibi Figure Example" 
+              camera-controls 
+              auto-rotate 
+              shadow-intensity="1" 
+              class="w-full h-full"
+            />
+            
+            {/* Nakrivljena slika osobe */}
+            <div className="absolute top-6 right-6 transform rotate-6 z-20 bg-white p-2 rounded-xl shadow-2xl w-32 h-40 overflow-hidden border-4 border-white">
               <img 
                 src="/person-photo.png" 
                 alt="Original Person" 
-                className="h-full w-auto object-contain rounded-2xl shadow-lg"
+                className="w-full h-full object-cover rounded-md"
               />
             </div>
-            
-            {/* 3D Model */}
-            <div className="h-full w-1/2 flex items-center justify-center">
-              <ModelViewer 
-                src="/hero-figurine.glb" 
-                alt="3D Chibi Figure Example" 
-                camera-controls 
-                auto-rotate 
-                shadow-intensity="1" 
-                class="w-full h-full"
-              />
+
+            {/* Strelica od slike ka modelu */}
+            <div className="absolute top-44 right-36 z-20 text-purple-600 transform -rotate-45">
+              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
             </div>
-            
+
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold text-slate-800 shadow-md">
               ⚡ AI Transformation
             </div>

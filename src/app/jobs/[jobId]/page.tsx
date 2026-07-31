@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import Link from 'next/link'
 
 type Job = {
   id: string
@@ -13,7 +14,11 @@ type Job = {
   error_message: string | null
 }
 
-const STEPS = ['Chibi illustration', '3D model', 'Print processing', 'Done']
+const STEPS = [
+  { name: 'Illustration', icon: '🎨' },
+  { name: '3D Model', icon: '🧊' },
+  { name: 'Print Prep', icon: '⚙️' }
+]
 
 function stepIndexForStatus(status: string) {
   if (['uploaded', 'illustration_generating'].includes(status)) return 0
@@ -36,6 +41,8 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
   const triggeredModel = useRef(false)
   const triggeredProcess = useRef(false)
 
+  const ModelViewer = 'model-viewer' as unknown as React.ElementType;
+
   async function fetchJob() {
     const { data } = await supabase.from('jobs').select('*').eq('id', jobId).single()
     if (data) setJob(data as Job)
@@ -45,7 +52,6 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
     fetchJob()
   }, [jobId])
 
-  // sign urls for whatever's available
   useEffect(() => {
     if (!job) return
 
@@ -60,7 +66,6 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
     if (job.final_stl_url) sign(job.final_stl_url, setFinalStlSignedUrl)
   }, [job?.illustration_url, job?.raw_model_url, job?.final_glb_url, job?.final_stl_url])
 
-  // orchestration
   useEffect(() => {
     if (!job) return
 
@@ -80,7 +85,6 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
     }
   }, [job?.status])
 
-  // polling while a background step is running
   useEffect(() => {
     if (!job) return
     if (!['illustration_generating', 'model_generating', 'processing'].includes(job.status)) return
@@ -97,78 +101,122 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
     return () => clearInterval(interval)
   }, [job?.status])
 
-  if (!job) return <p>Loading...</p>
+  if (!job) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading your project...</div>
 
   if (job.status === 'failed') {
     return (
-      <main style={{ maxWidth: 500, margin: '60px auto' }}>
-        <h2>Something went wrong</h2>
-        <p style={{ color: 'red' }}>{job.error_message || 'Unknown error'}</p>
-      </main>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+        <div className="bg-white p-12 rounded-3xl shadow-xl text-center max-w-md border border-red-100">
+          <div className="text-5xl mb-4">😕</div>
+          <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">Generation Failed</h2>
+          <p className="text-slate-500 mb-6">{job.error_message || 'An unknown error occurred.'}</p>
+          <Link href="/dashboard" className="bg-slate-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors">
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
     )
   }
 
   const currentStep = stepIndexForStatus(job.status)
 
   return (
-    <main style={{ maxWidth: 600, margin: '60px auto', padding: 20 }}>
-      <h1>Creating your figurine</h1>
-
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {STEPS.map((label, i) => (
-          <li
-            key={label}
-            style={{
-              padding: '10px 0',
-              fontWeight: i === currentStep ? 'bold' : 'normal',
-              color: i < currentStep ? '#2C1810' : i === currentStep ? '#000' : '#aaa',
-            }}
-          >
-            {i < currentStep ? '✓' : i === currentStep ? '→' : '○'} {label}
-          </li>
-        ))}
-      </ul>
-
-      {illustrationSignedUrl && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Illustration</h3>
-          <img src={illustrationSignedUrl} alt="Chibi illustration" style={{ maxWidth: 250 }} />
+    <div className="min-h-screen bg-slate-50">
+      <nav className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <Link href="/dashboard" className="font-heading text-2xl font-extrabold text-slate-900">
+            Chibi<span className="text-purple-600">3D</span>
+          </Link>
+          <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">
+            Back to Dashboard
+          </Link>
         </div>
-      )}
+      </nav>
 
-      {glbSignedUrl && !finalGlbSignedUrl && (
-        <div style={{ marginTop: 20 }}>
-          <h3>3D model (raw)</h3>
-          {/* @ts-expect-error model-viewer is a web component */}
-          <model-viewer src={glbSignedUrl} camera-controls auto-rotate style={{ width: '100%', height: 300 }} />
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        
+        {/* Stepper UI */}
+        <div className="flex justify-between items-center mb-12 relative">
+          <div className="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 rounded-full"></div>
+          <div 
+            className="absolute top-1/2 left-0 h-1 bg-purple-600 -translate-y-1/2 rounded-full transition-all duration-500"
+            style={{ width: `${(currentStep / 3) * 100}%` }}
+          ></div>
+          
+          {STEPS.map((step, i) => (
+            <div key={step.name} className="relative z-10 flex flex-col items-center bg-slate-50 px-4">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border-4 transition-all duration-300 ${
+                i < currentStep ? 'bg-purple-600 border-purple-600 text-white scale-110' :
+                i === currentStep ? 'bg-white border-purple-600 text-purple-600 scale-110 animate-pulse' :
+                'bg-white border-slate-300 text-slate-400'
+              }`}>
+                {i < currentStep ? '✓' : step.icon}
+              </div>
+              <span className={`mt-2 text-xs font-semibold ${i <= currentStep ? 'text-slate-900' : 'text-slate-400'}`}>
+                {step.name}
+              </span>
+            </div>
+          ))}
         </div>
-      )}
 
-      {finalGlbSignedUrl && (
-        <div style={{ marginTop: 20 }}>
-          <h3>Final figurine</h3>
-          {/* @ts-expect-error model-viewer is a web component */}
-          <model-viewer src={finalGlbSignedUrl} camera-controls auto-rotate style={{ width: '100%', height: 300 }} />
-          <div style={{ display: 'flex', gap: 12, marginTop: 12 }}>
-            {finalStlSignedUrl && (
-              <a
-                href={finalStlSignedUrl}
-                download="figurine.stl"
-                style={{ padding: '8px 16px', background: '#2C1810', color: 'white', borderRadius: 4, textDecoration: 'none' }}
-              >
-                Download STL (for printing)
-              </a>
-            )}
-            <a
-              href={finalGlbSignedUrl}
-              download="figurine.glb"
-              style={{ padding: '8px 16px', background: '#eee', border: '1px solid #ccc', borderRadius: 4, textDecoration: 'none', color: '#000' }}
-            >
-              Download GLB (for viewing/sharing)
-            </a>
-          </div>
+        {/* Sadržaj zavisno od statusa */}
+        <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center">
+          
+          {currentStep < 3 && (
+            <div className="text-center">
+              <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">
+                {currentStep === 0 && 'Drawing your Chibi...'}
+                {currentStep === 1 && 'Generating 3D geometry...'}
+                {currentStep === 2 && 'Preparing for 3D print...'}
+              </h2>
+              <p className="text-slate-500 mb-8">This usually takes 1-2 minutes. Keep this window open.</p>
+            </div>
+          )}
+
+          {illustrationSignedUrl && !finalGlbSignedUrl && (
+            <div className="text-center">
+              <img src={illustrationSignedUrl} alt="Chibi Illustration" className="max-w-[300px] rounded-2xl shadow-lg mx-auto" />
+              <p className="mt-4 text-sm text-slate-500">AI Illustration Preview</p>
+            </div>
+          )}
+
+          {glbSignedUrl && !finalGlbSignedUrl && (
+            <div className="w-full h-[400px] bg-slate-100 rounded-2xl overflow-hidden">
+              <ModelViewer src={glbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
+            </div>
+          )}
+
+          {finalGlbSignedUrl && (
+            <div className="w-full flex flex-col items-center">
+              <div className="w-full h-[500px] bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl overflow-hidden mb-8">
+                <ModelViewer src={finalGlbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
+              </div>
+              
+              <h2 className="font-heading text-3xl font-extrabold text-slate-900 mb-2 text-center">Your Figurine is Ready! 🎉</h2>
+              <p className="text-slate-500 mb-8 text-center">Drag to rotate. Download your files below.</p>
+
+              <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+                {finalStlSignedUrl && (
+                  <a 
+                    href={finalStlSignedUrl} 
+                    download="chibi-figurine.stl"
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 rounded-xl text-center shadow-lg shadow-purple-600/30 transition-all"
+                  >
+                    Download STL (Print)
+                  </a>
+                )}
+                <a 
+                  href={finalGlbSignedUrl} 
+                  download="chibi-figurine.glb"
+                  className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-4 rounded-xl text-center border border-slate-200 transition-all"
+                >
+                  Download GLB (View)
+                </a>
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </main>
+      </div>
+    </div>
   )
 }
