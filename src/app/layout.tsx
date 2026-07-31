@@ -14,8 +14,14 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Chibi Figurine | Pretvori svoju sliku u 3D lik",
-  description: "Generiši unikatne 3D chibi figurice od tvoje fotografije pomoću veštačke inteligencije. Spremno za 3D štampu.",
+  title: "Chibi3D | Turn Your Photo into a 3D Chibi Figure",
+  description: "Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.",
+  openGraph: {
+    title: "Chibi3D | Turn Your Photo into a 3D Chibi Figure",
+    description: "Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.",
+    images: ['/person-photo.png'], // Ovo će biti slika koja se prikazuje na Instagramu
+    type: 'website',
+  },
 };
 
 export default function RootLayout({

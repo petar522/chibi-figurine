@@ -60,9 +60,10 @@ export default function PricingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
             {PACKAGES.map((pkg) => {
               // Dinamički kreiramo link sa user_id i redirect_url
-              const checkoutUrl = pkg.isFree 
-                ? '/dashboard' 
-                : `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=https://chibi-figurine.vercel.app/dashboard`
+              const redirectUrl = encodeURIComponent('https://chibi-figurine.vercel.app/dashboard');
+const checkoutUrl = pkg.isFree 
+  ? '/dashboard' 
+  : `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=${redirectUrl}`;
 
               return (
                 <div key={pkg.variantId} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
