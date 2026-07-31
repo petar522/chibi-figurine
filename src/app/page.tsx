@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const ModelViewer = 'model-viewer' as unknown as React.ElementType;
-
+/* Navigacija */
 export default function Home() {
   return (
     <div className="bg-slate-50">
