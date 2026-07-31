@@ -42,7 +42,7 @@ export default function Home() {
           {/* Desni deo - 3D Model Preview */}
           <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
             <ModelViewer 
-              src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb" 
+              src="/hero-figurine.glb"
               alt="3D Chibi Figure Example" 
               camera-controls 
               auto-rotate 
