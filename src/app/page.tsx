@@ -100,7 +100,7 @@ export default function Home() {
             {/* Slika osobe (Before) */}
             <div className="bg-white p-4 rounded-3xl shadow-xl">
               <img 
-                src="/person-photo.jpg" 
+                src="/person-photo.png" 
                 alt="Original Person" 
                 className="rounded-2xl w-full h-[400px] object-cover"
               />
