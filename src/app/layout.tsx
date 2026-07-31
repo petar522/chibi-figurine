@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Chibi3D | Turn Your Photo into a 3D Chibi Figure",
     description: "Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.",
-    images: ['/person-photo.png'], // Ovo će biti slika koja se prikazuje na Instagramu
+    images: ['/illustration.png'], // Ovo će biti slika koja se prikazuje na Instagramu
     type: 'website',
   },
 };

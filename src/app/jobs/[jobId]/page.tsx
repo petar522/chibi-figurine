@@ -84,13 +84,13 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
 
   if (!job) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading your project...</div>
 
-  if (job.status === 'failed') {
+    if (job.status === 'failed') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-6">
         <div className="bg-white p-12 rounded-3xl shadow-xl text-center max-w-md border border-red-100">
           <div className="text-5xl mb-4">😕</div>
           <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">Generation Failed</h2>
-          <p className="text-slate-500 mb-6">{job.error_message || 'An unknown error occurred.'}</p>
+          <p className="text-slate-500 mb-6">Došlo je do greške na serveru, tvoj kredit je vraćen. Pokušaj sa drugom slikom.</p>
           <Link href="/dashboard" className="bg-slate-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors">Back to Dashboard</Link>
         </div>
       </div>

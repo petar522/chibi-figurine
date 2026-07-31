@@ -54,7 +54,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="flex flex-col gap-6">
             <div className="inline-block bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-sm font-bold w-fit">
-              🎁 Get 3 Free Generations
+              🎁 Try for Free
             </div>
             <h1 className="font-heading text-5xl md:text-6xl font-extrabold leading-tight text-slate-900">
               Turn your photo into a <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-600 to-pink-500">3D Chibi Figure</span>
@@ -73,12 +73,13 @@ export default function Home() {
           </div>
 
           {/* Desni deo - 3D Model sa nakrivljenom slikom */}
-          <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
+          <div className="relative h-[350px] md:h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
             <ModelViewer 
               src="/hero-figurine.glb" 
               alt="3D Chibi Figure Example" 
               camera-controls 
               auto-rotate 
+              disable-pan
               shadow-intensity="1" 
               class="w-full h-full"
             />

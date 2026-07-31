@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 const PACKAGES = [
-  { variantId: 'free', credits: 3, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
+  { variantId: 'free', credits: 1, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
   { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56', highlight: false },
   { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e', highlight: true },
   { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2', highlight: false },

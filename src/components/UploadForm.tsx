@@ -89,15 +89,16 @@ export default function UploadForm() {
 
       const body = await res.json()
 
-      if (!res.ok) {
-        if (body.error === 'INSUFFICIENT_CREDITS') {
-          setError('You are out of credits.')
-        } else {
-          setError('Something went wrong, please try again.')
-        }
-        setUploading(false)
-        return
-      }
+      // U funkciji handleConfirm, promeni error poruke:
+if (!res.ok) {
+  if (body.error === 'INSUFFICIENT_CREDITS') {
+    setError('You are out of credits.')
+  } else {
+    setError('Došlo je do greške na serveru, tvoj kredit je vraćen. Pokušaj sa drugom slikom.')
+  }
+  setUploading(false)
+  return
+}
 
       router.push(`/jobs/${body.jobId}`)
     } catch (err) {
@@ -128,13 +129,13 @@ export default function UploadForm() {
       <div className="flex flex-col items-center gap-4">
         <img src={preview} alt="Preview" className="max-w-[250px] rounded-xl shadow-md" />
         <div className="flex gap-3">
-          <button onClick={handleConfirm} disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors">
-            {uploading ? 'Uploading...' : 'Confirm & Generate'}
-          </button>
-          <button onClick={reset} disabled={uploading} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors">
-            Choose another
-          </button>
-        </div>
+  <button onClick={handleConfirm} disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+    {uploading ? 'Generating...' : 'Confirm & Generate'}
+  </button>
+  <button onClick={reset} disabled={uploading} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50">
+    Choose another
+  </button>
+</div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </div>
     )
