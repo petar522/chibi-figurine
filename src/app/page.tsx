@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import UploadForm from '@/components/UploadForm';
+
 const ModelViewer = 'model-viewer' as unknown as React.ElementType;
 
 export default function Home() {
@@ -10,8 +10,8 @@ export default function Home() {
         <div className="font-heading text-2xl font-extrabold text-slate-900">
           Chibi<span className="text-purple-600">3D</span>
         </div>
-        <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">
-          Moj nalog
+        <Link href="/login" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">
+          Sign in
         </Link>
       </nav>
 
@@ -21,37 +21,36 @@ export default function Home() {
           {/* Levi deo - Tekst */}
           <div className="flex flex-col gap-6">
             <div className="inline-block bg-purple-100 text-purple-700 px-4 py-1.5 rounded-full text-sm font-semibold w-fit">
-              🚀 Generisano za 2 minuta
+              🚀 Generated in 2 minutes
             </div>
             <h1 className="font-heading text-5xl md:text-6xl font-extrabold leading-tight text-slate-900">
-              Pretvori svoju sliku u <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">3D Chibi Figuricu</span>
+              Turn your photo into a <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-600 to-pink-500">3D Chibi Figure</span>
             </h1>
             <p className="text-lg text-slate-600 font-light">
-              Uploaduj fotografiju, a naša veštačka inteligencija će napraviti unikatnu chibi ilustraciju i pretvoriti je u 3D model spreman za štampu ili deljenje.
+              Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.
             </p>
             <div className="flex gap-4 mt-4">
-              <a href="#upload" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-600/30 transition-all hover:scale-105">
-                Isprobaj besplatno
-              </a>
+              <Link href="/login" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-600/30 transition-all hover:scale-105">
+                Try for free
+              </Link>
               <a href="#how-it-works" className="bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-8 py-4 rounded-xl transition-all">
-                Kako radi?
+                How it works
               </a>
             </div>
           </div>
 
           {/* Desni deo - 3D Model Preview */}
-          <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
-            {/* Ovde stavi neki svoj model sa raw_model_url ili final_glb_url u src */}
+          <div className="relative h-[500px] bg-linear-to-br from-purple-100 to-pink-100 rounded-3xl shadow-xl overflow-hidden flex items-center justify-center">
             <ModelViewer 
-              src="https://modelviewer.dev/shared-assets/models/Astronaut.glb" 
-              alt="Primer 3D figurice" 
+              src="https://modelviewer.dev/shared-assets/models/RobotExpressive.glb" 
+              alt="3D Chibi Figure Example" 
               camera-controls 
               auto-rotate 
               shadow-intensity="1" 
               class="w-full h-full"
-            ></ModelViewer>
+            />
             <div className="absolute bottom-4 left-4 bg-white/80 backdrop-blur px-3 py-1 rounded-full text-xs font-medium text-slate-800">
-              Rotiraj model da ga pogledaš
+              Drag to rotate
             </div>
           </div>
         </div>
@@ -61,48 +60,45 @@ export default function Home() {
       <section id="how-it-works" className="py-24 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-heading text-4xl font-extrabold text-center text-slate-900 mb-16">
-            Samo 3 jednostavna koraka
+            Only 3 simple steps
           </h2>
           <div className="grid md:grid-cols-3 gap-10">
-            {/* Korak 1 */}
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-purple-100 rounded-2xl flex items-center justify-center text-4xl mb-6">
                 📸
               </div>
-              <h3 className="font-heading text-xl font-bold mb-3">1. Uploaduj sliku</h3>
-              <p className="text-slate-600">Izaberi jasnu fotografiju lica. JPEG i PNG formati su podržani.</p>
+              <h3 className="font-heading text-xl font-bold mb-3">1. Upload Photo</h3>
+              <p className="text-slate-600">Choose a clear photo of a face. JPEG and PNG formats are supported.</p>
             </div>
-            {/* Korak 2 */}
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-pink-100 rounded-2xl flex items-center justify-center text-4xl mb-6">
                 🎨
               </div>
-              <h3 className="font-heading text-xl font-bold mb-3">2. AI crta chibi</h3>
-              <p className="text-slate-600">Veštačka inteligencija analizira lice i stvara simpatičnu chibi ilustraciju.</p>
+              <h3 className="font-heading text-xl font-bold mb-3">2. AI Draws Chibi</h3>
+              <p className="text-slate-600">Artificial intelligence analyzes the face and creates a cute chibi illustration.</p>
             </div>
-            {/* Korak 3 */}
             <div className="flex flex-col items-center text-center">
               <div className="w-20 h-20 bg-amber-100 rounded-2xl flex items-center justify-center text-4xl mb-6">
                 🧊
               </div>
-              <h3 className="font-heading text-xl font-bold mb-3">3. Preuzmi 3D</h3>
-              <p className="text-slate-600">Sistem generiše STL i GLB fajlove, spremne za 3D štampu ili deljenje.</p>
+              <h3 className="font-heading text-xl font-bold mb-3">3. Download 3D</h3>
+              <p className="text-slate-600">The system generates STL and GLB files, ready for 3D printing or sharing.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Upload Sekcija */}
+      {/* CTA Sekcija umesto otvorene forme */}
       <section id="upload" className="py-24 px-6 bg-slate-50">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-heading text-4xl font-extrabold text-center text-slate-900 mb-3">
-            Spreman za svoju figuricu?
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="font-heading text-4xl font-extrabold text-slate-900 mb-3">
+            Ready for your figurine?
           </h2>
-          <p className="text-center text-slate-600 mb-12">Prva generacija je besplatna. Samo uploaduj sliku ispod.</p>
+          <p className="text-slate-600 mb-12">Your first generation is free. Sign in to upload your photo.</p>
           
-          <div className="bg-white p-8 md:p-12 rounded-3xl shadow-xl border border-slate-100">
-            <UploadForm />
-          </div>
+          <Link href="/login" className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold px-10 py-4 rounded-xl shadow-lg shadow-purple-600/30 transition-all hover:scale-105 text-lg">
+            Get Started
+          </Link>
         </div>
       </section>
 
@@ -112,10 +108,10 @@ export default function Home() {
           <div className="font-heading text-xl font-extrabold text-white">
             Chibi<span className="text-purple-500">3D</span>
           </div>
-          <p className="text-sm">© 2024 Chibi3D. Sva prava zadržana.</p>
+          <p className="text-sm">© 2024 Chibi3D. All rights reserved.</p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="hover:text-white transition-colors">Uslovi korišćenja</a>
-            <a href="#" className="hover:text-white transition-colors">Privatnost</a>
+            <a href="#" className="hover:text-white transition-colors">Terms</a>
+            <a href="#" className="hover:text-white transition-colors">Privacy</a>
           </div>
         </div>
       </footer>
