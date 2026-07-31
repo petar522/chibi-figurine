@@ -28,7 +28,11 @@ export async function GET(
     return NextResponse.json({ status: job.status });
   }
 
-  const res = await fetch(`${process.env.BLENDER_SERVICE_URL}/status/${job.blender_job_id}`);
+  const res = await fetch(`${process.env.BLENDER_SERVICE_URL}/status/${job.blender_job_id}`, {
+  headers: {
+    'Authorization': `Bearer ${process.env.BLENDER_SHARED_SECRET}` // DODATO
+  }
+});
   const blenderStatus = await res.json();
 
   if (blenderStatus.status === 'completed') {

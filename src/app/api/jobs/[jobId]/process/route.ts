@@ -50,7 +50,8 @@ export async function POST(
 
     const res = await fetch(`${process.env.BLENDER_SERVICE_URL}/process`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+    'Authorization': `Bearer ${process.env.BLENDER_SHARED_SECRET}` },
       body: JSON.stringify({
         glb_url: downloadData.signedUrl,
         upload_glb_url: glbUpload.signedUrl,
