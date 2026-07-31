@@ -26,10 +26,11 @@ export default function TermsPage() {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
-          <div className="flex gap-6 text-sm">
+            <div className="flex gap-6 text-sm">
+            <Link href="/support" className="hover:text-white transition-colors">Support</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          </div>
+            </div>
         </div>
       </footer>
     </div>

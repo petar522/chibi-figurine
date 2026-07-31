@@ -84,9 +84,13 @@ export default function Home() {
               class="w-full h-full"
             />
             
-            {/* Nakrivljena slika osobe (bez strelice) */}
-            <div className="absolute top-6 right-6 transform rotate-6 z-20 bg-white p-2 rounded-xl shadow-2xl w-32 h-40 overflow-hidden border-4 border-white">
-              <img src="/person-photo.png" alt="Original Person" className="w-full h-full object-cover rounded-md" />
+            {/* Nakrivljena slika osobe - Manja na mobilnom, veca na desktopu */}
+            <div className="absolute top-4 right-4 md:top-6 md:right-6 transform rotate-6 z-20 bg-white p-1 md:p-2 rounded-xl shadow-2xl w-14 h-16 md:w-32 md:h-40 overflow-hidden border-2 md:border-4 border-white">
+              <img 
+                src="/person-photo.png" 
+                alt="Original Person" 
+                className="w-full h-full object-cover rounded-md" 
+              />
             </div>
 
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-xs font-bold text-slate-800 shadow-md">
@@ -156,6 +160,7 @@ export default function Home() {
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
           <div className="flex gap-6 text-sm">
+            <Link href="/support" className="hover:text-white transition-colors">Support</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           </div>

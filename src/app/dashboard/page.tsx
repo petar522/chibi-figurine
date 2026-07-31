@@ -50,14 +50,15 @@ export default function DashboardPage() {
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/dashboard" className="font-heading text-2xl font-extrabold text-slate-900">Chibi<span className="text-purple-600">3D</span></Link>
-          <div className="flex items-center gap-6">
-            <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-              <span className="text-sm font-medium text-slate-500">Credits:</span>
-              <span className="text-sm font-bold text-purple-600">{credits}</span>
-            </div>
-            <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
-            <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
-          </div>
+<div className="flex items-center gap-6">
+  <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+    <span className="text-sm font-medium text-slate-500">Credits:</span>
+    <span className="text-sm font-bold text-purple-600">{credits}</span>
+  </div>
+  <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
+  <Link href="/support" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</Link>
+  <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
+</div>
         </div>
       </nav>
 
@@ -106,9 +107,10 @@ export default function DashboardPage() {
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
           <div className="flex gap-6 text-sm">
+            <Link href="/support" className="hover:text-white transition-colors">Support</Link>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          </div>
+            </div>
         </div>
       </footer>
     </div>
