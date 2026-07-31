@@ -7,10 +7,10 @@ import { useEffect, useState } from 'react'
 const ModelViewer = 'model-viewer' as unknown as React.ElementType;
 
 const PACKAGES = [
-  { name: 'Starter', price: '$2.99', credits: '3', desc: 'Test the magic.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/PLACEHOLDER_1' },
-  { name: 'Hobby', price: '$4.99', credits: '5', desc: 'For trying out more styles.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56' },
-  { name: 'Creator', price: '$8.99', credits: '10', desc: 'Best value for regular creators.', highlight: true, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e' },
-  { name: 'Studio', price: '$19.99', credits: '30', desc: 'For power users & businesses.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2' },
+  { name: 'Free', price: '$0', credits: '3', desc: 'Test the magic.', highlight: false, isFree: true },
+  { name: 'Hobby', price: '$8.99', credits: '5', desc: 'For trying out more styles.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56' },
+  { name: 'Creator', price: '$14.99', credits: '10', desc: 'Best value for regular creators.', highlight: true, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e' },
+  { name: 'Studio', price: '$35.99', credits: '30', desc: 'For power users & businesses.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2' },
 ]
 
 export default function Home() {
@@ -125,7 +125,7 @@ export default function Home() {
           <h2 className="font-heading text-4xl font-extrabold text-center text-slate-900 mb-3">Simple, Credit-Based Pricing</h2>
           <p className="text-center text-slate-600 mb-16">No subscriptions. Buy credits only when you need them. Start with 3 free generations.</p>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
             {PACKAGES.map((pkg) => (
               <div key={pkg.name} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
                 {pkg.highlight && (
@@ -137,8 +137,11 @@ export default function Home() {
                   <span className="text-3xl font-extrabold text-slate-900">{pkg.price}</span>
                   <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
                 </div>
-                <Link href="/login" className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}>
-                  Get {pkg.name}
+                <Link 
+                  href={pkg.isFree ? "/login" : "#"} 
+                  className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}
+                >
+                  {pkg.isFree ? 'Get Started' : `Buy ${pkg.name}`}
                 </Link>
               </div>
             ))}

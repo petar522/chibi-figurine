@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 const PACKAGES = [
-  { variantId: '1', credits: 3, price: '$2.99', name: 'Starter', desc: 'Test the magic.', checkoutSlug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/PLACEHOLDER_1', highlight: false },
-  { variantId: '1968526', credits: 5, price: '$4.99', name: 'Hobby', desc: 'For trying out more styles.', checkoutSlug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56', highlight: false },
-  { variantId: '1968516', credits: 10, price: '$8.99', name: 'Creator', desc: 'Best value for regular creators.', checkoutSlug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e', highlight: true },
-  { variantId: '1968527', credits: 30, price: '$19.99', name: 'Studio', desc: 'For power users and businesses.', checkoutSlug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2', highlight: false },
+  { variantId: 'free', credits: 3, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
+  { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56', highlight: false },
+  { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e', highlight: true },
+  { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2', highlight: false },
 ]
 
 export default function PricingPage() {
@@ -58,27 +58,38 @@ export default function PricingPage() {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
-            {PACKAGES.map((pkg) => (
-              <div key={pkg.variantId} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
-                {pkg.highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
-                )}
-                <h3 className="font-heading text-xl font-bold mb-2 text-slate-900">{pkg.name}</h3>
-                <p className="text-slate-500 text-sm mb-6">{pkg.desc}</p>
-                <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-slate-900">{pkg.price}</span>
-                  <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
+            {PACKAGES.map((pkg) => {
+              // Dinamički kreiramo link sa user_id i redirect_url
+              const checkoutUrl = pkg.isFree 
+                ? '/dashboard' 
+                : `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=https://chibi-figurine.vercel.app/dashboard`
+
+              return (
+                <div key={pkg.variantId} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
+                  {pkg.highlight && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
+                  )}
+                  <h3 className="font-heading text-xl font-bold mb-2 text-slate-900">{pkg.name}</h3>
+                  <p className="text-slate-500 text-sm mb-6">{pkg.desc}</p>
+                  <div className="mb-6">
+                    <span className="text-3xl font-extrabold text-slate-900">{pkg.price}</span>
+                    <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
+                  </div>
+                  <ul className="space-y-3 mb-8 text-slate-600 flex-grow">
+                    <li className="flex items-center gap-2"><span className="text-green-500">✓</span> {pkg.credits} 3D Generations</li>
+                    <li className="flex items-center gap-2"><span className="text-green-500">✓</span> High-Quality STL & GLB</li>
+                    <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Commercial Use</li>
+                  </ul>
+                  <a 
+                    href={checkoutUrl} 
+                    target={pkg.isFree ? "_self" : "_blank"} 
+                    className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}
+                  >
+                    {pkg.isFree ? 'Go to Dashboard' : `Buy ${pkg.name} Pack`}
+                  </a>
                 </div>
-                <ul className="space-y-3 mb-8 text-slate-600 flex-grow">
-                  <li className="flex items-center gap-2"><span className="text-green-500">✓</span> {pkg.credits} 3D Generations</li>
-                  <li className="flex items-center gap-2"><span className="text-green-500">✓</span> High-Quality STL & GLB</li>
-                  <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Commercial Use</li>
-                </ul>
-                <a href={`${pkg.checkoutSlug}?checkout[custom][user_id]=${userId}`} target="_blank" className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}>
-                  Buy {pkg.name} Pack
-                </a>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
