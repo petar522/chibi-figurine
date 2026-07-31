@@ -88,6 +88,43 @@ export default function Home() {
         </div>
       </section>
 
+            {/* Before & After Sekcija */}
+      <section className="py-24 px-6 bg-slate-50">
+        <div className="max-w-5xl mx-auto text-center">
+          <h2 className="font-heading text-4xl font-extrabold text-slate-900 mb-3">
+            From Photo to 3D in minutes
+          </h2>
+          <p className="text-slate-600 mb-12">See the magic of AI transformation.</p>
+          
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Slika osobe (Before) */}
+            <div className="bg-white p-4 rounded-3xl shadow-xl">
+              <img 
+                src="/person-photo.jpg" 
+                alt="Original Person" 
+                className="rounded-2xl w-full h-[400px] object-cover"
+              />
+              <p className="mt-4 text-slate-500 font-medium">Your Photo</p>
+            </div>
+            
+            {/* 3D Model (After) */}
+            <div className="bg-white p-4 rounded-3xl shadow-xl h-full flex flex-col">
+              <div className="flex-1 bg-linear-to-br from-purple-100 to-pink-100 rounded-2xl overflow-hidden">
+                <ModelViewer 
+                  src="/hero-figurine.glb" 
+                  alt="3D Chibi Figure" 
+                  camera-controls 
+                  auto-rotate 
+                  shadow-intensity="1" 
+                  class="w-full h-[400px]"
+                />
+              </div>
+              <p className="mt-4 text-slate-500 font-medium">Your 3D Chibi</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Sekcija umesto otvorene forme */}
       <section id="upload" className="py-24 px-6 bg-slate-50">
         <div className="max-w-3xl mx-auto text-center">
