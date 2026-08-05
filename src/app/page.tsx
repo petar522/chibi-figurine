@@ -60,7 +60,7 @@ export default function Home() {
               Turn your photo into a <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-600 to-pink-500">3D Chibi Figure</span>
             </h1>
             <p className="text-lg text-slate-600 font-light">
-              Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.
+              Upload a photo, and advanced AI system will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.
             </p>
             <div className="flex gap-4 mt-4">
               <Link href="/login" className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-600/30 transition-all hover:scale-105">
