@@ -4,11 +4,12 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
+// ZAMENI ove slug-ove sa tvojim pravim Creem Checkout linkovima!
 const PACKAGES = [
   { variantId: 'free', credits: 1, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
-  { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56', highlight: false },
-  { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e', highlight: true },
-  { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2', highlight: false },
+  { variantId: 'hobby', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://www.creem.io/payment/prod_7GuVriiicfUEQCMAV9DLNd', highlight: false },
+  { variantId: 'creator', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://www.creem.io/payment/prod_4RAclx40H6wFkfn6j8oJxY', highlight: true },
+  { variantId: 'studio', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://www.creem.io/payment/prod_3wDK6TWERPCiw0KUes89hm', highlight: false },
 ]
 
 export default function PricingPage() {
@@ -32,18 +33,17 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-10">
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/dashboard" className="font-heading text-2xl font-extrabold text-slate-900">Chibi<span className="text-purple-600">3D</span></Link>
-<div className="flex items-center gap-6">
-  <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-    <span className="text-sm font-medium text-slate-500">Credits:</span>
-    <span className="text-sm font-bold text-purple-600">{credits}</span>
-  </div>
-  <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
-  <Link href="/support" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</Link>
-  <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
-</div>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+              <span className="text-sm font-medium text-slate-500">Credits:</span>
+              <span className="text-sm font-bold text-purple-600">{credits}</span>
+            </div>
+            <Link href="/dashboard" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Dashboard</Link>
+            <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
+          </div>
         </div>
       </nav>
 
@@ -60,11 +60,10 @@ export default function PricingPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
             {PACKAGES.map((pkg) => {
-              // Dinamički kreiramo link sa user_id i redirect_url
-              const redirectUrl = encodeURIComponent('https://chibi-figurine.vercel.app/dashboard');
-const checkoutUrl = pkg.isFree 
-  ? '/dashboard' 
-  : `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=${redirectUrl}`;
+              // Prosleđujemo user_id i broj kredita kroz metadata direktno u linku!
+              const checkoutUrl = pkg.isFree 
+                ? '/dashboard' 
+                : `${pkg.slug}?metadata[user_id]=${userId}&metadata[credits]=${pkg.credits}&checkout[redirect_url]=https://chibi-figurine.vercel.app/dashboard`
 
               return (
                 <div key={pkg.variantId} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
@@ -100,11 +99,11 @@ const checkoutUrl = pkg.isFree
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
-<div className="flex gap-6 text-sm">
-  <Link href="/support" className="hover:text-white transition-colors">Support</Link>
-  <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-  <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-</div>
+          <div className="flex gap-6 text-sm">
+            <Link href="/support" className="hover:text-white transition-colors">Support</Link>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          </div>
         </div>
       </footer>
     </div>
