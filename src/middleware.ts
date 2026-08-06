@@ -2,6 +2,16 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  if (process.env.MAINTENANCE_MODE === 'true') {
+    return new NextResponse(
+      `<html><body style="font-family: sans-serif; text-align: center; padding: 100px 20px;">
+        <h1>We'll be back soon</h1>
+        <p>Chibi3D is currently undergoing maintenance. Check back in a few days!</p>
+      </body></html>`,
+      { status: 503, headers: { 'Content-Type': 'text/html' } }
+    )
+  }
+
   let response = NextResponse.next({ request })
 
   const supabase = createServerClient(
