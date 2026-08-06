@@ -56,7 +56,7 @@ export default function DashboardPage() {
     <span className="text-sm font-bold text-purple-600">{credits}</span>
   </div>
   <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
-  <Link href="/support" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</Link>
+  <a href="mailto:support@chibi3d.store" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</a>
   <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
 </div>
         </div>
