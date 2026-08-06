@@ -4,12 +4,11 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-// ZAMENI ove slug-ove sa tvojim pravim Creem Checkout linkovima!
 const PACKAGES = [
   { variantId: 'free', credits: 1, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
-  { variantId: 'hobby', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://www.creem.io/payment/prod_7GuVriiicfUEQCMAV9DLNd', highlight: false },
-  { variantId: 'creator', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://www.creem.io/payment/prod_4RAclx40H6wFkfn6j8oJxY', highlight: true },
-  { variantId: 'studio', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://www.creem.io/payment/prod_3wDK6TWERPCiw0KUes89hm', highlight: false },
+  { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/7c23ffc0-2822-4730-95d6-8b44a8e22386', highlight: false },
+  { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/e38cb54b-cd62-46e0-b63d-098412f93807', highlight: true },
+  { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/89a735e4-79cc-41a7-9c00-c6df84060036', highlight: false },
 ]
 
 export default function PricingPage() {
@@ -60,10 +59,10 @@ export default function PricingPage() {
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
             {PACKAGES.map((pkg) => {
-              // Prosleđujemo user_id i broj kredita kroz metadata direktno u linku!
+              // Lemon Squeezy koristi checkout[custom][user_id] i tvoj novi domen
               const checkoutUrl = pkg.isFree 
                 ? '/dashboard' 
-                : `${pkg.slug}?metadata[user_id]=${userId}&metadata[credits]=${pkg.credits}&checkout[redirect_url]=https://chibi-figurine.vercel.app/dashboard`
+                : `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=https://chibi3d.store/dashboard`
 
               return (
                 <div key={pkg.variantId} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
@@ -100,7 +99,7 @@ export default function PricingPage() {
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
           <div className="flex gap-6 text-sm">
-            <a href="support@chibi3d.store" className="hover:text-white transition-colors">Contact Email</a>
+            <a href="mailto:support@chibi3d.store" className="hover:text-white transition-colors">Support</a>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
           </div>

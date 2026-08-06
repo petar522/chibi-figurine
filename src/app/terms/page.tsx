@@ -19,6 +19,7 @@ export default function TermsPage() {
           <p>By using Chibi3D, you agree to these terms. You are granted a non-exclusive, non-transferable license to use the generated 3D models for personal and commercial purposes.</p>
           <p>You may not use the service to generate inappropriate content, violate intellectual property rights, or harm others. We reserve the right to terminate accounts that violate these terms.</p>
           <p>Payments are processed securely by Lemon Squeezy. Refunds are handled on a case-by-case basis.</p>
+          <p>Users are strictly prohibited from uploading NSFW, adult, pornographic, or sexually explicit content. Any attempt to generate such content will result in immediate account termination without a refund.</p>
         </div>
       </div>
 
