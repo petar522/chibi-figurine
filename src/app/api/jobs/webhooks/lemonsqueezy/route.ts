@@ -28,44 +28,68 @@ export async function POST(request: Request) {
   const payload = JSON.parse(rawBody)
   const eventName = payload.meta.event_name
 
-if (eventName === 'order_created') {
-  const orderId = String(payload.data.id)
-  const variantId = String(payload.data.attributes.first_order_item.variant_id)
-  const userId = payload.meta.custom_data?.user_id
+  if (eventName === 'order_created') {
+    const orderId = String(payload.data.id)
+    const variantId = String(payload.data.attributes.first_order_item.variant_id)
+    const userId = payload.meta.custom_data?.user_id
 
-  const credits = VARIANT_CREDITS[variantId]
-  if (!credits) {
-    return NextResponse.json({ error: 'UNKNOWN_VARIANT' }, { status: 400 })
+    const credits = VARIANT_CREDITS[variantId]
+    if (!credits) {
+      return NextResponse.json({ error: 'UNKNOWN_VARIANT' }, { status: 400 })
+    }
+    if (!userId) {
+      return NextResponse.json({ error: 'MISSING_USER_ID' }, { status: 400 })
+    }
+
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('id, credits, processed_order_ids')
+      .eq('id', userId)
+      .single()
+
+    if (!profile) {
+      return NextResponse.json({ error: 'USER_NOT_FOUND' }, { status: 404 })
+    }
+
+    // Sprečavamo duplo dodavanje kredita ako LS pošalje webhook dva puta
+    if (profile.processed_order_ids?.includes(orderId)) {
+      return NextResponse.json({ status: 'already_processed' })
+    }
+
+    await supabaseAdmin
+      .from('profiles')
+      .update({
+        credits: profile.credits + credits,
+        processed_order_ids: [...(profile.processed_order_ids ?? []), orderId],
+      })
+      .eq('id', profile.id)
   }
-  if (!userId) {
-    return NextResponse.json({ error: 'MISSING_USER_ID' }, { status: 400 })
-  }
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('id, credits, processed_order_ids')
-    .eq('id', userId)
-    .single()
-
-  if (!profile) {
-    return NextResponse.json({ error: 'USER_NOT_FOUND' }, { status: 404 })
-  }
-
-  if (profile.processed_order_ids?.includes(orderId)) {
-    return NextResponse.json({ status: 'already_processed' })
-  }
-
-  await supabaseAdmin
-    .from('profiles')
-    .update({
-      credits: profile.credits + credits,
-      processed_order_ids: [...(profile.processed_order_ids ?? []), orderId],
-    })
-    .eq('id', profile.id)
-}
 
   if (eventName === 'order_refunded') {
-    // opciono: oduzmi kredite nazad — zavisi da li želiš da dozvoliš da ostanu ako su već iskorišćeni
+    const variantId = String(payload.data.attributes.first_order_item.variant_id)
+    const userId = payload.meta.custom_data?.user_id
+
+    // Koliko kredita da oduzmemo? Uzimamo iz iste mape kao kad smo dodavali!
+    const creditsToDeduct = VARIANT_CREDITS[variantId]
+    
+    if (userId && creditsToDeduct) {
+      // Pronađi korisnika
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('id, credits')
+        .eq('id', userId)
+        .single()
+
+      if (profile) {
+        // Oduzmi kredite (može ići u minus ako ih je već potrošio)
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            credits: profile.credits - creditsToDeduct
+          })
+          .eq('id', profile.id)
+      }
+    }
   }
 
   return NextResponse.json({ received: true })
