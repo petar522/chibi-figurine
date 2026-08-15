@@ -14,6 +14,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chibi3d.store'),
   title: "Chibi3D | Turn Your Photo into a 3D Chibi Figure",
   description: "Upload a photo, and our AI will create a unique chibi illustration and turn it into a 3D model ready for printing or sharing.",
   openGraph: {

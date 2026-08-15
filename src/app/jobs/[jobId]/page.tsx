@@ -39,7 +39,28 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
 
   async function fetchJob() {
     const { data } = await supabase.from('jobs').select('*').eq('id', jobId).single()
-    if (data) setJob(data as Job)
+    if (data) {
+      setJob(data as Job)
+      
+      // Pravimo Signed URL-ove svaki put kada fetchujemo job, ako putanja postoji
+      if (data.illustration_url) {
+        const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.illustration_url, 3600)
+        if (urlData) setIllustrationSignedUrl(urlData.signedUrl)
+      }
+      if (data.raw_model_url) {
+        const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.raw_model_url, 3600)
+        if (urlData) setGlbSignedUrl(urlData.signedUrl)
+      }
+      // Finalne fajlove potpisujemo SAMO ako je status completed (da ne pokušamo da potpišemo fajl koji Blender još nije uploadovao)
+      if (data.status === 'completed' && data.final_glb_url) {
+        const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.final_glb_url, 3600)
+        if (urlData) setFinalGlbSignedUrl(urlData.signedUrl)
+      }
+      if (data.status === 'completed' && data.final_stl_url) {
+        const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.final_stl_url, 3600)
+        if (urlData) setFinalStlSignedUrl(urlData.signedUrl)
+      }
+    }
     
     const { data: userData } = await supabase.auth.getUser()
     if (userData.user) {
@@ -52,28 +73,15 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
 
   useEffect(() => {
     if (!job) return
-    async function sign(path: string, setter: (url: string) => void) {
-      const { data } = await supabase.storage.from('job-files').createSignedUrl(path, 3600)
-      if (data) setter(data.signedUrl)
-    }
-    if (job.illustration_url) sign(job.illustration_url, setIllustrationSignedUrl)
-    if (job.raw_model_url) sign(job.raw_model_url, setGlbSignedUrl)
-    if (job.final_glb_url) sign(job.final_glb_url, setFinalGlbSignedUrl)
-    if (job.final_stl_url) sign(job.final_stl_url, setFinalStlSignedUrl)
-  }, [job?.illustration_url, job?.raw_model_url, job?.final_glb_url, job?.final_stl_url])
-
-  useEffect(() => {
-    if (!job) return
     if (job.status === 'uploaded' && !triggeredIllustration.current) { triggeredIllustration.current = true; fetch(`/api/jobs/${jobId}/illustration`, { method: 'POST' }).finally(fetchJob) }
     if (job.status === 'illustration_ready' && !triggeredModel.current) { triggeredModel.current = true; fetch(`/api/jobs/${jobId}/model`, { method: 'POST' }).finally(fetchJob) }
     if (job.status === 'model_ready' && !triggeredProcess.current) { triggeredProcess.current = true; fetch(`/api/jobs/${jobId}/process`, { method: 'POST' }).finally(fetchJob) }
   }, [job?.status])
 
-  // Polling se nastavlja dok god ne dobijemo finalne URL-ove, čak i ako je status "completed"
   useEffect(() => {
     if (!job) return
     if (!['illustration_generating', 'model_generating', 'processing', 'completed'].includes(job.status)) return
-    if (job.status === 'completed' && finalGlbSignedUrl) return // Prestani tek kada dobijemo link
+    if (job.status === 'completed' && finalGlbSignedUrl) return // Prestani da pingujes kad je gotovo i URL je spreman
 
     const interval = setInterval(async () => {
       if (job.status === 'model_generating') await fetch(`/api/jobs/${jobId}/model/status`)
@@ -159,20 +167,22 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
 
             {/* Desni deo: 3D Model */}
             <div className="w-full flex flex-col items-center">
-              {glbSignedUrl && !finalGlbSignedUrl && (
+              {/* Raw model se prikazuje samo dok traje obrada */}
+              {glbSignedUrl && job.status !== 'completed' && (
                 <div className="w-full h-[400px] bg-slate-100 rounded-2xl overflow-hidden">
                   <ModelViewer src={glbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
                 </div>
               )}
               
-              {finalGlbSignedUrl && (
+              {/* Finalni model se prikazuje samo kad je status completed */}
+              {job.status === 'completed' && finalGlbSignedUrl && (
                 <div className="w-full h-[500px] bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl overflow-hidden">
                   <ModelViewer src={finalGlbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
                 </div>
               )}
 
               {/* Placeholder dok čeka 3D model */}
-              {illustrationSignedUrl && !glbSignedUrl && !finalGlbSignedUrl && (
+              {illustrationSignedUrl && !glbSignedUrl && !(job.status === 'completed' && finalGlbSignedUrl) && (
                 <div className="w-full h-[400px] bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 animate-pulse">
                   Waiting for 3D model...
                 </div>
@@ -180,8 +190,8 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
             </div>
           </div>
 
-          {/* Sekcija za preuzimanje (Odvojena da uvek bude ispod) */}
-          {finalGlbSignedUrl && (
+          {/* Sekcija za preuzimanje (Pojavljuje se samo kad je status completed) */}
+          {job.status === 'completed' && finalGlbSignedUrl && (
             <div className="w-full flex flex-col items-center mt-8">
               <h2 className="font-heading text-3xl font-extrabold text-slate-900 mb-2 text-center">Your Figurine is Ready! 🎉</h2>
               <p className="text-slate-500 mb-8 text-center">Drag to rotate. Download your files below.</p>
