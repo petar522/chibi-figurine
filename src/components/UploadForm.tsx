@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
@@ -20,11 +21,11 @@ export default function UploadForm() {
   const supabase = createClient()
 
   // Provera da li je korisnik ulogovan odmah po ucitavanju komponente
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setIsLoggedIn(!!data.user)
     })
-  })
+  }, [])
 
   function validateAndSetFile(f: File) {
     setError(null)
@@ -71,6 +72,10 @@ export default function UploadForm() {
         return
       }
 
+      // 1. Generiši Device Fingerprint
+      const fp = await FingerprintJS.load()
+      const { visitorId } = await fp.get()
+
       const ext = file.name.split('.').pop()
       const tempId = crypto.randomUUID()
       const path = `${user.id}/${tempId}/original.${ext}`
@@ -81,24 +86,29 @@ export default function UploadForm() {
 
       if (uploadError) throw uploadError
 
+      // 2. Pošalji fingerprint ka API-ju zajedno sa slikom
       const res = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imagePath: path }),
+        body: JSON.stringify({ 
+          imagePath: path,
+          deviceFingerprint: visitorId 
+        }),
       })
 
       const body = await res.json()
 
-      // U funkciji handleConfirm, promeni error poruke:
-if (!res.ok) {
-  if (body.error === 'INSUFFICIENT_CREDITS') {
-    setError('You are out of credits.')
-  } else {
-    setError('Došlo je do greške na serveru, tvoj kredit je vraćen. Pokušaj sa drugom slikom.')
-  }
-  setUploading(false)
-  return
-}
+      if (!res.ok) {
+        if (body.error === 'INSUFFICIENT_CREDITS') {
+          setError('You are out of credits.')
+        } else if (body.error === 'DEVICE_BLOCKED') {
+          setError('Free trial limit reached on this device. Please buy credits.')
+        } else {
+          setError('A server error occurred. Your credit has been refunded. Please try with a different photo.')
+        }
+        setUploading(false)
+        return
+      }
 
       router.push(`/jobs/${body.jobId}`)
     } catch (err) {
@@ -129,14 +139,14 @@ if (!res.ok) {
       <div className="flex flex-col items-center gap-4">
         <img src={preview} alt="Preview" className="max-w-[250px] rounded-xl shadow-md" />
         <div className="flex gap-3">
-  <button onClick={handleConfirm} disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-    {uploading ? 'Generating...' : 'Confirm & Generate'}
-  </button>
-  <button onClick={reset} disabled={uploading} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50">
-    Choose another
-  </button>
-</div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+          <button onClick={handleConfirm} disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            {uploading ? 'Generating...' : 'Confirm & Generate'}
+          </button>
+          <button onClick={reset} disabled={uploading} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-6 py-2.5 rounded-lg transition-colors disabled:opacity-50">
+            Choose another
+          </button>
+        </div>
+        {error && <p className="text-red-500 text-sm">{error}</p>}
       </div>
     )
   }
@@ -158,7 +168,7 @@ if (!res.ok) {
         onChange={onPick}
         style={{ display: 'none' }}
       />
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
     </div>
   )
 }

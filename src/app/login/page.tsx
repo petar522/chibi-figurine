@@ -30,21 +30,16 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
-      
-      {/* Logo dugme za povratak na home */}
       <Link href="/" className="font-heading text-3xl font-extrabold text-slate-900 mb-8">
         Chibi<span className="text-purple-600">3D</span>
       </Link>
 
-      {/* Kartica za prijavu */}
       <div className="w-full max-w-md bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100">
-        
         <div className="text-center mb-8">
           <h1 className="font-heading text-2xl font-bold text-slate-900">Sign in to Chibi3D</h1>
           <p className="text-slate-500 mt-2 text-sm">Use your Google account or email to get 1 free generation.</p>
         </div>
 
-        {/* Google dugme */}
         <button 
           onClick={signInWithGoogle} 
           className="w-full flex items-center justify-center gap-3 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold py-3.5 rounded-xl transition-colors mb-6"
@@ -58,7 +53,6 @@ export default function LoginPage() {
           Continue with Google
         </button>
 
-        {/* Razdelnik */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-200"></div>
@@ -68,7 +62,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Magic Link forma
         {sent ? (
           <div className="text-center bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl">
             <p className="font-semibold">Check your email! 📬</p>
@@ -92,7 +85,7 @@ export default function LoginPage() {
               {loading ? 'Sending...' : 'Send Magic Link'}
             </button>
           </form>
-        )} */}
+        )}
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6 max-w-xs">
