@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, use } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { sendGAEvent } from '@next/third-parties/google'
 
 type Job = {
   id: string; status: string; illustration_url: string | null; raw_model_url: string | null; final_glb_url: string | null; final_stl_url: string | null; error_message: string | null
@@ -55,6 +56,8 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
       if (data.status === 'completed' && data.final_glb_url) {
         const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.final_glb_url, 3600)
         if (urlData) setFinalGlbSignedUrl(urlData.signedUrl)
+          
+        sendGAEvent('event', 'job_completed')
       }
       if (data.status === 'completed' && data.final_stl_url) {
         const { data: urlData } = await supabase.storage.from('job-files').createSignedUrl(data.final_stl_url, 3600)

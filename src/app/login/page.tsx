@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useState } from 'react'
 import Link from 'next/link'
+import { sendGAEvent } from '@next/third-parties/google'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const supabase = createClient()
 
   async function signInWithGoogle() {
+    sendGAEvent('event', 'sign_up', { method: 'google' })
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${location.origin}/auth/callback` },
@@ -19,6 +21,7 @@ export default function LoginPage() {
 
   async function signInWithMagicLink(e: React.FormEvent) {
     e.preventDefault()
+    sendGAEvent('event', 'sign_up', { method: 'magic_link' })
     setLoading(true)
     await supabase.auth.signInWithOtp({
       email,

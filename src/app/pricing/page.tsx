@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { sendGAEvent } from '@next/third-parties/google'
 
 const PACKAGES = [
   { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/7c23ffc0-2822-4730-95d6-8b44a8e22386', highlight: false, isFree: false },
@@ -82,6 +83,11 @@ export default function PricingPage() {
                   <a 
                     href={checkoutUrl} 
                     target={pkg.isFree ? "_self" : "_blank"} 
+                    onClick={() => sendGAEvent('event', 'begin_checkout', { 
+                      currency: 'USD', 
+                      value: parseFloat(pkg.price.replace('$', '')), 
+                      item_name: pkg.name 
+                    })}
                     className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}
                   >
                     {pkg.isFree ? 'Go to Dashboard' : `Buy ${pkg.name} Pack`}

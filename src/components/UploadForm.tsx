@@ -4,7 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
+import { sendGAEvent } from '@next/third-parties/google'
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
@@ -63,6 +63,8 @@ export default function UploadForm() {
     if (!file) return
     setUploading(true)
     setError(null)
+
+    sendGAEvent('event', 'upload_started')
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
