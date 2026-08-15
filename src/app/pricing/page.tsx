@@ -5,10 +5,9 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 const PACKAGES = [
-  { variantId: 'free', credits: 1, price: '$0', name: 'Free', desc: 'Test the magic.', slug: '', highlight: false, isFree: true },
-  { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/7c23ffc0-2822-4730-95d6-8b44a8e22386', highlight: false },
-  { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/e38cb54b-cd62-46e0-b63d-098412f93807', highlight: true },
-  { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/89a735e4-79cc-41a7-9c00-c6df84060036', highlight: false },
+  { variantId: '1968526', credits: 5, price: '$8.99', name: 'Hobby', desc: 'For trying out more styles.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/7c23ffc0-2822-4730-95d6-8b44a8e22386', highlight: false, isFree: false },
+  { variantId: '1968516', credits: 10, price: '$14.99', name: 'Creator', desc: 'Best value for regular creators.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/e38cb54b-cd62-46e0-b63d-098412f93807', highlight: true, isFree: false },
+  { variantId: '1968527', credits: 30, price: '$35.99', name: 'Studio', desc: 'For power users and businesses.', slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/89a735e4-79cc-41a7-9c00-c6df84060036', highlight: false, isFree: false },
 ]
 
 export default function PricingPage() {
