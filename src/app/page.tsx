@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 const ModelViewer = 'model-viewer' as unknown as React.ElementType;
 
 const PACKAGES = [
-  { name: 'Free', price: '$0', credits: '3', desc: 'Test the magic.', highlight: false, isFree: true },
+  { name: 'Free', price: '$0', credits: '1', desc: 'Test the magic.', highlight: false, isFree: true },
   { name: 'Hobby', price: '$8.99', credits: '5', desc: 'For trying out more styles.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/68e73d42-0522-438a-af66-9fe04ed00e56' },
   { name: 'Creator', price: '$14.99', credits: '10', desc: 'Best value for regular creators.', highlight: true, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/2d27b1e0-cdb9-4e6b-83d1-086e5675376e' },
   { name: 'Studio', price: '$35.99', credits: '30', desc: 'For power users & businesses.', highlight: false, slug: 'https://chibi-figurine.lemonsqueezy.com/checkout/buy/d2944f83-6a7a-4e73-8fce-bcfa0ce474c2' },
@@ -16,9 +16,13 @@ const PACKAGES = [
 export default function Home() {
   const supabase = createClient()
   const [isLogged, setIsLogged] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setIsLogged(!!data.user))
+    supabase.auth.getUser().then(({ data }) => {
+      setIsLogged(!!data.user)
+      setUserId(data.user?.id ?? null)
+    })
   }, [])
 
   async function handleSignOut() {
@@ -128,28 +132,36 @@ export default function Home() {
       <section id="pricing" className="py-24 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
           <h2 className="font-heading text-4xl font-extrabold text-center text-slate-900 mb-3">Simple, Credit-Based Pricing</h2>
-          <p className="text-center text-slate-600 mb-16">No subscriptions. Buy credits only when you need them. Start with 3 free generations.</p>
+          <p className="text-center text-slate-600 mb-16">No subscriptions. Buy credits only when you need them. Start with 1 free generation.</p>
           
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
-            {PACKAGES.map((pkg) => (
-              <div key={pkg.name} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
-                {pkg.highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full">POPULAR</div>
-                )}
-                <h3 className="font-heading text-xl font-bold mb-2 text-slate-900">{pkg.name}</h3>
-                <p className="text-slate-500 text-sm mb-6">{pkg.desc}</p>
-                <div className="mb-6">
-                  <span className="text-3xl font-extrabold text-slate-900">{pkg.price}</span>
-                  <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
+          <div className="grid sm:grid-cols-1 md:grid-cols-4 gap-8 items-start">
+            {PACKAGES.map((pkg) => {
+              // Ako korisnik nije ulogovan, šaljemo ga na login. Ako jeste, pravimo LS link.
+              const checkoutUrl = pkg.isFree 
+                ? "/login" 
+                : (userId ? `${pkg.slug}?checkout[custom][user_id]=${userId}&checkout[redirect_url]=https://chibi3d.store/dashboard` : "/login")
+
+              return (
+                <div key={pkg.name} className={`bg-white p-6 rounded-3xl shadow-md flex flex-col relative ${pkg.highlight ? 'border-2 border-purple-600 lg:scale-105 shadow-xl' : 'border border-slate-100'}`}>
+                  {pkg.highlight && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-xs font-bold px-4 py-1 rounded-full">POPULAR</div>
+                  )}
+                  <h3 className="font-heading text-xl font-bold mb-2 text-slate-900">{pkg.name}</h3>
+                  <p className="text-slate-500 text-sm mb-6">{pkg.desc}</p>
+                  <div className="mb-6">
+                    <span className="text-3xl font-extrabold text-slate-900">{pkg.price}</span>
+                    <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
+                  </div>
+                  <a 
+                    href={checkoutUrl} 
+                    target={userId && !pkg.isFree ? "_blank" : "_self"} 
+                    className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}
+                  >
+                    {pkg.isFree ? 'Get Started' : `Buy ${pkg.name}`}
+                  </a>
                 </div>
-                <Link 
-                  href={pkg.isFree ? "/login" : "#"} 
-                  className={`block text-center font-bold py-3 rounded-xl transition-colors mt-auto ${pkg.highlight ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'}`}
-                >
-                  {pkg.isFree ? 'Get Started' : `Buy ${pkg.name}`}
-                </Link>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
