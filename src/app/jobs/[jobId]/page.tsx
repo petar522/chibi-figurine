@@ -69,28 +69,31 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
     if (job.status === 'model_ready' && !triggeredProcess.current) { triggeredProcess.current = true; fetch(`/api/jobs/${jobId}/process`, { method: 'POST' }).finally(fetchJob) }
   }, [job?.status])
 
+  // Polling se nastavlja dok god ne dobijemo finalne URL-ove, čak i ako je status "completed"
   useEffect(() => {
     if (!job) return
-    if (!['illustration_generating', 'model_generating', 'processing'].includes(job.status)) return
+    if (!['illustration_generating', 'model_generating', 'processing', 'completed'].includes(job.status)) return
+    if (job.status === 'completed' && finalGlbSignedUrl) return // Prestani tek kada dobijemo link
+
     const interval = setInterval(async () => {
       if (job.status === 'model_generating') await fetch(`/api/jobs/${jobId}/model/status`)
       else if (job.status === 'processing') await fetch(`/api/jobs/${jobId}/process/status`)
       fetchJob()
     }, 3000)
     return () => clearInterval(interval)
-  }, [job?.status])
+  }, [job?.status, finalGlbSignedUrl])
 
   async function handleSignOut() { await supabase.auth.signOut(); window.location.href = '/' }
 
   if (!job) return <div className="min-h-screen flex items-center justify-center text-slate-500">Loading your project...</div>
 
-    if (job.status === 'failed') {
+  if (job.status === 'failed') {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 px-6">
         <div className="bg-white p-12 rounded-3xl shadow-xl text-center max-w-md border border-red-100">
           <div className="text-5xl mb-4">😕</div>
           <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">Generation Failed</h2>
-          <p className="text-slate-500 mb-6">Došlo je do greške na serveru, tvoj kredit je vraćen. Pokušaj sa drugom slikom.</p>
+          <p className="text-slate-500 mb-6">A server error occurred. Your credit has been refunded. Please try with a different photo.</p>
           <Link href="/dashboard" className="bg-slate-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-slate-800 transition-colors">Back to Dashboard</Link>
         </div>
       </div>
@@ -104,15 +107,15 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/dashboard" className="font-heading text-2xl font-extrabold text-slate-900">Chibi<span className="text-purple-600">3D</span></Link>
-<div className="flex items-center gap-6">
-  <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-    <span className="text-sm font-medium text-slate-500">Credits:</span>
-    <span className="text-sm font-bold text-purple-600">{credits}</span>
-  </div>
-  <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
-  <a href="mailto:support@chibi3d.store" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</a>
-  <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
-</div>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+              <span className="text-sm font-medium text-slate-500">Credits:</span>
+              <span className="text-sm font-bold text-purple-600">{credits}</span>
+            </div>
+            <Link href="/pricing" className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors">Buy more</Link>
+            <a href="mailto:support@chibi3d.store" className="text-sm font-medium text-slate-700 hover:text-purple-600 transition-colors">Support</a>
+            <button onClick={handleSignOut} className="text-sm font-medium text-slate-700 hover:text-red-500 transition-colors">Sign out</button>
+          </div>
         </div>
       </nav>
 
@@ -131,32 +134,55 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl border border-slate-100 p-8 md:p-12 min-h-[400px] flex flex-col items-center justify-center">
+          
           {currentStep < 3 && (
-            <div className="text-center">
+            <div className="text-center mb-8">
               <h2 className="font-heading text-2xl font-bold text-slate-900 mb-2">
                 {currentStep === 0 && 'Drawing your Chibi...'}
                 {currentStep === 1 && 'Generating 3D geometry...'}
                 {currentStep === 2 && 'Preparing for 3D print...'}
               </h2>
-              <p className="text-slate-500 mb-8">This usually takes 1-2 minutes. Keep this window open.</p>
+              <p className="text-slate-500">This usually takes 1-2 minutes. Keep this window open.</p>
             </div>
           )}
-          {illustrationSignedUrl && !finalGlbSignedUrl && (
-            <div className="text-center">
-              <img src={illustrationSignedUrl} alt="Chibi Illustration" className="max-w-[300px] rounded-2xl shadow-lg mx-auto" />
-              <p className="mt-4 text-sm text-slate-500">AI Illustration Preview</p>
-            </div>
-          )}
-          {glbSignedUrl && !finalGlbSignedUrl && (
-            <div className="w-full h-[400px] bg-slate-100 rounded-2xl overflow-hidden">
-              <ModelViewer src={glbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
-            </div>
-          )}
-          {finalGlbSignedUrl && (
-            <div className="w-full flex flex-col items-center">
-              <div className="w-full h-[500px] bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl overflow-hidden mb-8">
-                <ModelViewer src={finalGlbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
+
+          {/* Grid za prikaz slike i 3D modela jedno pored drugog */}
+          <div className={`w-full ${illustrationSignedUrl && (glbSignedUrl || finalGlbSignedUrl) ? 'grid md:grid-cols-2 gap-8 items-center' : 'flex flex-col items-center'}`}>
+            
+            {/* Levi deo: Ilustracija */}
+            {illustrationSignedUrl && (
+              <div className="flex flex-col items-center">
+                <img src={illustrationSignedUrl} alt="Chibi Illustration" className="max-w-[300px] w-full rounded-2xl shadow-lg object-contain" />
+                <p className="mt-4 text-sm text-slate-500">AI Illustration Preview</p>
               </div>
+            )}
+
+            {/* Desni deo: 3D Model */}
+            <div className="w-full flex flex-col items-center">
+              {glbSignedUrl && !finalGlbSignedUrl && (
+                <div className="w-full h-[400px] bg-slate-100 rounded-2xl overflow-hidden">
+                  <ModelViewer src={glbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
+                </div>
+              )}
+              
+              {finalGlbSignedUrl && (
+                <div className="w-full h-[500px] bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl overflow-hidden">
+                  <ModelViewer src={finalGlbSignedUrl} camera-controls auto-rotate shadow-intensity="1" class="w-full h-full" />
+                </div>
+              )}
+
+              {/* Placeholder dok čeka 3D model */}
+              {illustrationSignedUrl && !glbSignedUrl && !finalGlbSignedUrl && (
+                <div className="w-full h-[400px] bg-slate-100 rounded-2xl flex items-center justify-center text-slate-400 animate-pulse">
+                  Waiting for 3D model...
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Sekcija za preuzimanje (Odvojena da uvek bude ispod) */}
+          {finalGlbSignedUrl && (
+            <div className="w-full flex flex-col items-center mt-8">
               <h2 className="font-heading text-3xl font-extrabold text-slate-900 mb-2 text-center">Your Figurine is Ready! 🎉</h2>
               <p className="text-slate-500 mb-8 text-center">Drag to rotate. Download your files below.</p>
               <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
@@ -173,7 +199,7 @@ export default function JobPage({ params }: { params: Promise<{ jobId: string }>
           <div className="font-heading text-xl font-extrabold text-white">Chibi<span className="text-purple-500">3D</span></div>
           <p className="text-sm">© 2026 Chibi3D. All rights reserved.</p>
             <div className="flex gap-6 text-sm">
-            <a href="support@chibi3d.store" className="hover:text-white transition-colors">Contact Email</a>
+            <a href="mailto:support@chibi3d.store" className="hover:text-white transition-colors">Support</a>
             <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             </div>
