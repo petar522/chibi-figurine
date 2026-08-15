@@ -72,33 +72,28 @@ export default function UploadForm() {
         return
       }
 
-      // 1. Pokušaj da generišeš Fingerprint (ako browser blokira, nastavi dalje sa 'unknown')
-      let visitorId = 'unknown'
-      try {
-        const fp = await FingerprintJS.load()
-        const { visitorId: fpId } = await fp.get()
-        visitorId = fpId
-      } catch (fpError) {
-        console.log('Fingerprint blokiran od strane browsera, nastavljam bez njega.')
-      }
-
+      // 1. Upload slike (Koristimo Math.random umesto crypto.randomUUID jer ga neki telefoni nemaju)
       const ext = file.name.split('.').pop()
-      const tempId = crypto.randomUUID()
+      const tempId = Math.random().toString(36).substring(2) + Date.now().toString(36)
       const path = `${user.id}/${tempId}/original.${ext}`
 
       const { error: uploadError } = await supabase.storage
         .from('job-files')
         .upload(path, file, { contentType: file.type })
 
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        setError('Upload error: ' + uploadError.message)
+        setUploading(false)
+        return
+      }
 
-      // 2. Pošalji fingerprint (ili 'unknown') ka API-ju
+      // 2. Slanje zahteva ka Render API-ju (Bez Fingerprint-a za sada)
       const res = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           imagePath: path,
-          deviceFingerprint: visitorId 
+          deviceFingerprint: 'mobile_user_unknown' 
         }),
       })
 
@@ -110,7 +105,7 @@ export default function UploadForm() {
         } else if (body.error === 'DEVICE_BLOCKED') {
           setError('Free trial limit reached on this device. Please buy credits.')
         } else {
-          setError('A server error occurred. Your credit has been refunded. Please try with a different photo.')
+          setError('Server error: ' + JSON.stringify(body.error))
         }
         setUploading(false)
         return
@@ -118,7 +113,7 @@ export default function UploadForm() {
 
       router.push(`/jobs/${body.jobId}`)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload error.')
+      setError('Network Error: ' + (err instanceof Error ? err.message : 'Unknown'))
       setUploading(false)
     }
   }
