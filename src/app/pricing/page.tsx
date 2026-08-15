@@ -56,7 +56,7 @@ export default function PricingPage() {
             You need to be logged in to buy credits. <Link href="/login" className="font-bold underline">Sign in here</Link>.
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
+          <div className="grid sm:grid-cols-1 md:grid-cols-3 gap-8 items-start max-w-5xl mx-auto">
             {PACKAGES.map((pkg) => {
               // Lemon Squeezy koristi checkout[custom][user_id] i tvoj novi domen
               const checkoutUrl = pkg.isFree 
@@ -75,7 +75,7 @@ export default function PricingPage() {
                     <span className="text-slate-400 ml-1 text-sm">/ {pkg.credits} credits</span>
                   </div>
                   <ul className="space-y-3 mb-8 text-slate-600 flex-grow">
-                    <li className="flex items-center gap-2"><span className="text-green-500">✓</span> {pkg.credits} 3D Generations</li>
+                    <li className="flex items-center gap-2"><span className="text-green-500">✓</span> {pkg.credits} Generations</li>
                     <li className="flex items-center gap-2"><span className="text-green-500">✓</span> High-Quality STL & GLB</li>
                     <li className="flex items-center gap-2"><span className="text-green-500">✓</span> Commercial Use</li>
                   </ul>
