@@ -59,7 +59,7 @@ export default function UploadForm() {
     setError(null)
   }
 
-    async function handleConfirm() {
+      async function handleConfirm() {
     if (!file) return
     setUploading(true)
     setError(null)
