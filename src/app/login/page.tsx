@@ -68,7 +68,7 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Magic Link forma */}
+        {/* Magic Link forma
         {sent ? (
           <div className="text-center bg-green-50 border border-green-200 text-green-700 p-4 rounded-xl">
             <p className="font-semibold">Check your email! 📬</p>
@@ -92,7 +92,7 @@ export default function LoginPage() {
               {loading ? 'Sending...' : 'Send Magic Link'}
             </button>
           </form>
-        )}
+        )} */}
       </div>
 
       <p className="text-center text-xs text-slate-400 mt-6 max-w-xs">
