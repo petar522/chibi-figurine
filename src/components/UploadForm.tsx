@@ -59,7 +59,7 @@ export default function UploadForm() {
     setError(null)
   }
 
-  async function handleConfirm() {
+    async function handleConfirm() {
     if (!file) return
     setUploading(true)
     setError(null)
@@ -72,9 +72,15 @@ export default function UploadForm() {
         return
       }
 
-      // 1. Generiši Device Fingerprint
-      const fp = await FingerprintJS.load()
-      const { visitorId } = await fp.get()
+      // 1. Pokušaj da generišeš Fingerprint (ako browser blokira, nastavi dalje sa 'unknown')
+      let visitorId = 'unknown'
+      try {
+        const fp = await FingerprintJS.load()
+        const { visitorId: fpId } = await fp.get()
+        visitorId = fpId
+      } catch (fpError) {
+        console.log('Fingerprint blokiran od strane browsera, nastavljam bez njega.')
+      }
 
       const ext = file.name.split('.').pop()
       const tempId = crypto.randomUUID()
@@ -86,7 +92,7 @@ export default function UploadForm() {
 
       if (uploadError) throw uploadError
 
-      // 2. Pošalji fingerprint ka API-ju zajedno sa slikom
+      // 2. Pošalji fingerprint (ili 'unknown') ka API-ju
       const res = await fetch('/api/jobs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
